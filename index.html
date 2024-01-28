@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fantasy Legendz Lottery Simulator</title>
+    <style>
+        body {
+            font-family: Verdana, Arial, sans-serif;
+            text-align: center;
+        }
+
+        #result {
+            font-size: 24px;
+            color: #ff6600; /* Bright orange color */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Fantasy Legendz Lottery Simulator</h1>
+
+    <label for="teamName">Team Name:</label>
+    <input type="text" id="teamName" placeholder="Enter Team Name">
+
+    <label for="teamWeight">Weighting (%):</label>
+    <input type="number" id="teamWeight" placeholder="Enter Weighting">
+
+    <button onclick="addTeam()">Add Team</button>
+
+    <p>Current Teams:</p>
+    <ul id="teamList"></ul>
+
+    <button onclick="runLottery()">Run Lottery</button>
+    <button onclick="revealResults()">Reveal Results</button>
+
+    <p id="result"></p>
+
+    <script>
+        let teams = [];
+
+        function addTeam() {
+            const teamNameInput = document.getElementById('teamName');
+            const teamWeightInput = document.getElementById('teamWeight');
+
+            const teamName = teamNameInput.value.trim();
+            const teamWeight = parseInt(teamWeightInput.value);
+
+            if (teamName && !isNaN(teamWeight) && teamWeight >= 0) {
+                teams.push({ name: teamName, weight: teamWeight });
+                displayTeams();
+            }
+
+            teamNameInput.value = '';
+            teamWeightInput.value = '';
+        }
+
+        function displayTeams() {
+            const teamList = document.getElementById('teamList');
+            teamList.innerHTML = teams.map(team => `<li>${team.name} - ${team.weight}%</li>`).join('');
+        }
+
+        function runLottery() {
+            const totalWeight = teams.reduce((sum, team) => sum + team.weight, 0);
+
+            if (totalWeight === 100) {
+                document.getElementById('result').textContent = 'Running Lottery...';
+
+                setTimeout(() => {
+                    const randomNumber = Math.random() * 100;
+                    let cumulativeWeight = 0;
+                    let selectedTeam;
+
+                    for (const team of teams) {
+                        cumulativeWeight += team.weight;
+                        if (randomNumber <= cumulativeWeight) {
+                            selectedTeam = team.name;
+                            break;
+                        }
+                    }
+
+                    document.getElementById('result').innerHTML = `<span style="font-size: 36px; color: #ffcc00;">The selected team is... ${selectedTeam}!</span>`;
+                }, 4000); // Simulating a 4-second dramatic pause
+            } else {
+                alert('Total weight must equal 100%');
+            }
+        }
+
+        function revealResults() {
+            const resultElement = document.getElementById('result');
+            const results = teams.map(team => team.name);
+
+            if (!resultElement.textContent.includes('The selected team is')) {
+                const revealedTeam = results.pop();
+                resultElement.innerHTML = `<span style="font-size: 36px; color: #ffcc00;">The selected team is... ${revealedTeam}!</span>`;
+            }
+        }
+    </script>
+
+</body>
+</html>
