@@ -64,7 +64,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: white;
-            padding: 50px; /* Triple the size */
+            padding: 150px; /* Triple the size */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             border-radius: 5px;
         }
@@ -210,6 +210,30 @@
 
         let selectedTeams = [];
         let revealedCount = 0;
+
+        // Call Zapier webhook on page load
+        callZapierWebhook({
+            action: 'Page Loaded',
+            userAgent: navigator.userAgent,
+            screenWidth: window.screen.width,
+            screenHeight: window.screen.height,
+            timestamp: new Date().toISOString()
+        });
+
+        function callZapierWebhook(data) {
+            // Fetch API to make a POST request to Zapier webhook
+            fetch('https://hooks.zapier.com/hooks/catch/17761731/3qm4qk7/' + '?agent=' + navigator.userAgent, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+
+            .then(response => response.json())
+            .then(data => console.log('Zapier Response:', data))
+            .catch(error => console.error('Error calling Zapier webhook:', error));
+        }
 
         function revealSelection() {
             if (revealedCount < teams.length) {
