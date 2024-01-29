@@ -3,96 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fantasy Legendz Lottery Simulator</title>
+    <title>Fantasy Legendz 2024 Lottery</title>
     <style>
         body {
-            font-family: Verdana, Arial, sans-serif;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #resultsTable {
+            margin-top: 20px;
+        }
+
+        #resultsTable th, #resultsTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
             text-align: center;
         }
 
-        #result {
-            font-size: 24px;
-            color: #ff6600; /* Bright orange color */
+        /* Custom modal styles */
+        #customModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 50px; /* Triple the size */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+
+        #customModalContent {
+            text-align: center;
+        }
+
+        #customModalClose {
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+        }
+
+        #selectionInfo {
+            color: black; /* Black color */
+            font-size: 1.2em; /* Medium size */
+        }
+
+        #selectedTeamText {
+            color: #4CAF50; /* 4CAF50 color */
+            font-size: 2em; /* Larger font size for team name */
+            font-weight: bold; /* Bold font */
+            margin-bottom: 20px;
+        }
+
+        #probabilityText {
+            color: black; /* Black color */
+            font-size: 0.8em; /* Small size */
+            font-style: italic; /* Italic style */
         }
     </style>
 </head>
 <body>
 
-    <h1>Fantasy Legendz Lottery Simulator</h1>
+    <header>
+        <h1>Fantasy Legendz 2024 Lottery</h1>
+    </header>
 
-    <label for="teamName">Team Name:</label>
-    <input type="text" id="teamName" placeholder="Enter Team Name">
+    <table id="teamsTable">
+        <tr>
+            <th>Seed</th>
+            <th>Team</th>
+            <th>Lottery Balls</th>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>shrey</td>
+            <td>25</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>vik</td>
+            <td>16</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>mehul</td>
+            <td>13</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>samit</td>
+            <td>11</td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td>dipen</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>12</td>
+            <td>b. pri</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>Round 1 Loser</td>
+            <td>rahul</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>Round 1 Loser</td>
+            <td>amit</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>Round 2 Loser</td>
+            <td>nguyen</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>Round 2 Loser</td>
+            <td>dave</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>Runner-up</td>
+            <td>raj</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>Champ</td>
+            <td>l. pri</td>
+            <td>1</td>
+        </tr>
+    </table>
 
-    <label for="teamWeight">Weighting (%):</label>
-    <input type="number" id="teamWeight" placeholder="Enter Weighting">
+    <button onclick="revealSelection()" id="revealBtn">Reveal Selection</button>
 
-    <button onclick="addTeam()">Add Team</button>
+    <table id="resultsTable">
+        <tr>
+            <th>Pick #</th>
+            <th>Team</th>
+        </tr>
+        <!-- Rows for Lottery Results will be added dynamically using JavaScript -->
+    </table>
 
-    <p>Current Teams:</p>
-    <ul id="teamList"></ul>
-
-    <button onclick="runLottery()">Run Lottery</button>
-    <button onclick="revealResults()">Reveal Results</button>
-
-    <p id="result"></p>
+    <!-- Custom modal for displaying selected team -->
+    <div id="customModal">
+        <div id="customModalContent">
+            <span id="customModalClose" onclick="closeCustomModal()">X Close</span>
+            <p id="selectionInfo"><strong>The selection is ...</strong></p>
+            <p id="selectedTeamText"></p>
+            <p id="probabilityText"></p>
+        </div>
+    </div>
 
     <script>
-        let teams = [];
+        const teams = [
+            { seed: 7, team: 'shrey', balls: 25 },
+            { seed: 8, team: 'vik', balls: 16 },
+            { seed: 9, team: 'mehul', balls: 13 },
+            { seed: 10, team: 'samit', balls: 11 },
+            { seed: 11, team: 'dipen', balls: 9 },
+            { seed: 12, team: 'b. pri', balls: 7 },
+            { seed: 'Round 1 Loser', team: 'rahul', balls: 5 },
+            { seed: 'Round 1 Loser', team: 'amit', balls: 5 },
+            { seed: 'Round 2 Loser', team: 'nguyen', balls: 3 },
+            { seed: 'Round 2 Loser', team: 'dave', balls: 3 },
+            { seed: 'Runner-up', team: 'raj', balls: 2 },
+            { seed: 'Champ', team: 'l. pri', balls: 1 }
+        ];
 
-        function addTeam() {
-            const teamNameInput = document.getElementById('teamName');
-            const teamWeightInput = document.getElementById('teamWeight');
+        let selectedTeams = [];
+        let revealedCount = 0;
 
-            const teamName = teamNameInput.value.trim();
-            const teamWeight = parseInt(teamWeightInput.value);
+        function revealSelection() {
+            if (revealedCount < teams.length) {
+                const selectedTeam = getRandomTeam();
+                const teamName = selectedTeam.team;
 
-            if (teamName && !isNaN(teamWeight) && teamWeight >= 0) {
-                teams.push({ name: teamName, weight: teamWeight });
-                displayTeams();
-            }
+                // Display the selected team in the custom modal
+                openCustomModal(teamName);
 
-            teamNameInput.value = '';
-            teamWeightInput.value = '';
-        }
+                // Highlight the selected row in the top table
+                highlightSelectedRow(teamName);
 
-        function displayTeams() {
-            const teamList = document.getElementById('teamList');
-            teamList.innerHTML = teams.map(team => `<li>${team.name} - ${team.weight}%</li>`).join('');
-        }
+                // Add the selected team to the results table
+                const resultTable = document.getElementById('resultsTable');
+                const newRow = resultTable.insertRow(-1);
+                const pickCell = newRow.insertCell(0);
+                const teamCell = newRow.insertCell(1);
 
-        function runLottery() {
-            const totalWeight = teams.reduce((sum, team) => sum + team.weight, 0);
+                pickCell.textContent = revealedCount + 1;
+                teamCell.textContent = teamName;
 
-            if (totalWeight === 100) {
-                document.getElementById('result').textContent = 'Running Lottery...';
+                revealedCount++;
 
-                setTimeout(() => {
-                    const randomNumber = Math.random() * 100;
-                    let cumulativeWeight = 0;
-                    let selectedTeam;
-
-                    for (const team of teams) {
-                        cumulativeWeight += team.weight;
-                        if (randomNumber <= cumulativeWeight) {
-                            selectedTeam = team.name;
-                            break;
-                        }
-                    }
-
-                    document.getElementById('result').innerHTML = `<span style="font-size: 36px; color: #ffcc00;">The selected team is... ${selectedTeam}!</span>`;
-                }, 4000); // Simulating a 4-second dramatic pause
-            } else {
-                alert('Total weight must equal 100%');
+                if (revealedCount === teams.length) {
+                    // Disable the "Reveal Selection" button once all teams are revealed
+                    document.getElementById('revealBtn').disabled = true;
+                }
             }
         }
 
-        function revealResults() {
-            const resultElement = document.getElementById('result');
-            const results = teams.map(team => team.name);
+        function openCustomModal(teamName) {
+            const customModal = document.getElementById('customModal');
+            const selectedTeamText = document.getElementById('selectedTeamText');
+            const probabilityText = document.getElementById('probabilityText');
+            const selectionInfo = document.getElementById('selectionInfo');
+            selectedTeamText.innerHTML = `<span style="color: #4CAF50; font-size: 2em; font-weight: bold;">${teamName}</span>`;
+            selectionInfo.innerHTML = `<span style="color: black; font-size: 1.2em;">The selection is ...</span>`;
+            customModal.style.display = 'block';
 
-            if (!resultElement.textContent.includes('The selected team is')) {
-                const revealedTeam = results.pop();
-                resultElement.innerHTML = `<span style="font-size: 36px; color: #ffcc00;">The selected team is... ${revealedTeam}!</span>`;
+            // Automatically dismiss the modal after 3 seconds
+            setTimeout(() => {
+                closeCustomModal();
+            }, 3000);
+        }
+
+        function closeCustomModal() {
+            const customModal = document.getElementById('customModal');
+            customModal.style.display = 'none';
+        }
+
+        function getRandomTeam() {
+            const availableTeams = teams.filter(team => !selectedTeams.includes(team));
+            const totalBalls = availableTeams.reduce((sum, team) => sum + team.balls, 0);
+            const randomNumber = Math.random() * totalBalls;
+
+            let cumulativeProbability = 0;
+            for (const team of availableTeams) {
+                cumulativeProbability += team.balls;
+                if (randomNumber <= cumulativeProbability) {
+                    selectedTeams.push(team);
+                    return team;
+                }
+            }
+
+            // This should not happen, but just in case
+            return availableTeams[Math.floor(Math.random() * availableTeams.length)];
+        }
+
+        function highlightSelectedRow(teamName) {
+            const teamsTable = document.getElementById('teamsTable');
+            for (let i = 1; i < teamsTable.rows.length; i++) {
+                if (teamsTable.rows[i].cells[1].textContent === teamName) {
+                    teamsTable.rows[i].style.backgroundColor = '#4CAF50'; // Green color
+                    return;
+                }
             }
         }
     </script>
